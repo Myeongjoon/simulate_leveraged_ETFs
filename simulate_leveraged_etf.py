@@ -81,14 +81,7 @@ def simulate_leveraged(stocks, etf_names=['QQQ', 'TQQQ', 'SQQQ'], return_dfs=Fal
     normal['dividend'] = 0
     normal['split'] = 0
 
-    # this version uses the normal prices with splits
-    # normal = normal[['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Dividend', 'Split']]
-    # normal.columns = ['date', 'open', 'high', 'low', 'close', 'volume', 'dividend', 'split']
-
     if write:
-        # normal['volume'] = normal['volume'].astype('int')
-        # pos_sim['volume'] = pos_sim['volume'].astype('int')
-        # neg_sim['volume'] = neg_sim['volume'].astype('int')
         normal.to_csv(DATADIR + etf_names[0] + '.csv', index=False)
         pos_sim.to_csv(DATADIR + etf_names[1] + '.csv', index=False)
         neg_sim.to_csv(DATADIR + etf_names[2] + '.csv', index=False)
@@ -371,10 +364,24 @@ def load_sample_data():
     return stocks
 
 
+import pandas_datareader as pdr
+import matplotlib.pyplot as plt
+
+
 class simulate_leveraged_etf:
     def __init__(self, etf_ticker, leverage_ticker):
         self.etf_ticker = etf_ticker
         self.leverage_ticker = leverage_ticker
+
+    def build(self):
+        start = '01-01-1990'
+        end = '12-20-2019'
+        df = pdr.DataReader(self.etf_ticker, "yahoo", start, end)
+        df.to_csv("eod_data/" + self.etf_ticker + ".csv")
+        df.plot()
+        plt.show()
+        ## parse datas
+        pass
 
 
 if __name__ == "__main__":
