@@ -126,7 +126,8 @@ def create_simulated_leveraged(df, pos_lev_df, neg_lev_df):
     # also need to set 'Close' column for calculating splits, etc
     pos_lev_df['daily_pct_chg'] = pos_lev_df[col].pct_change()
     neg_lev_df['daily_pct_chg'] = neg_lev_df[col].pct_change()
-    pos_sim.loc[:, 'daily_pct_chg'] *= pos_mult  # multiply the original ETF by the average multiple to get leveraged amount
+    pos_sim.loc[:,
+    'daily_pct_chg'] *= pos_mult  # multiply the original ETF by the average multiple to get leveraged amount
     # backcalculate adjuted close
     pos_sim.loc[pos_sim.index[1]:, col] = ((pos_sim['daily_pct_chg'] + 1).cumprod() * pos_sim.iloc[0][col])[1:]
     neg_sim.loc[:, 'daily_pct_chg'] *= neg_mult
@@ -176,7 +177,6 @@ def create_simulated_leveraged(df, pos_lev_df, neg_lev_df):
 
         total_split *= r['Split']
 
-
     # TODO: fix issue where first price is not within range
     low_adj = 0.25  # noticed from SQQQ
     high_adj = 2  # noticed from TQQQ
@@ -196,7 +196,6 @@ def create_simulated_leveraged(df, pos_lev_df, neg_lev_df):
             neg_splits.append(1)
 
         total_split *= r['Split']
-
 
     pos_sim['Ticker'] = pos_lev_df['Ticker'][0]
     neg_sim['Ticker'] = neg_lev_df['Ticker'][0]
@@ -304,9 +303,8 @@ def predict_OHL(normal, pos_sim, neg_sim, earliest_pos_date, earliest_neg_date):
         print('WARNING: OOB score on train data was low:', train_score)
 
     neg_test_preds = pd.DataFrame(rfr.predict(test_feats_neg),
-                                 columns=['open', 'high', 'low'],
-                                 index=feat_targ_df.loc[:earliest_neg_date].index)
-
+                                  columns=['open', 'high', 'low'],
+                                  index=feat_targ_df.loc[:earliest_neg_date].index)
 
     # back-calculate OHL and overwrite original DF
     # first datapoint was dropped due to no pct_change for unleveraged etf
@@ -316,7 +314,6 @@ def predict_OHL(normal, pos_sim, neg_sim, earliest_pos_date, earliest_neg_date):
 
     pos_sim = pos_sim.iloc[1:]
     pos_sim.loc[:earliest_pos_date, ['open', 'high', 'low']] = pos_test_preds
-
 
     neg_sim_test = neg_sim.loc[:earliest_neg_date]
     neg_sim_test = neg_sim_test.iloc[1:]
@@ -332,7 +329,8 @@ def predict_OHL(normal, pos_sim, neg_sim, earliest_pos_date, earliest_neg_date):
     return pos_sim, neg_sim
 
 
-def create_simulated_dataset(stocks, etf_names=['QQQ', 'TQQQ', 'SQQQ'], return_dfs=False, clean_all_but_latest=True, create_dir=True):
+def create_simulated_dataset(stocks, etf_names=['QQQ', 'TQQQ', 'SQQQ'], return_dfs=False, clean_all_but_latest=True,
+                             create_dir=True):
     """
     creates simulated dataset for quandl
 
@@ -371,6 +369,13 @@ def load_sample_data():
     sqqq = pd.read_csv('eod_data/SQQQ.csv', index_col='Date')
     stocks = {'QQQ': qqq, 'TQQQ': tqqq, 'SQQQ': sqqq}
     return stocks
+
+
+class simulate_leveraged_etf:
+    def __init__(self, etf_ticker, leverage_ticker):
+        self.etf_ticker = etf_ticker
+        self.leverage_ticker = leverage_ticker
+
 
 if __name__ == "__main__":
     stocks = load_sample_data()
